@@ -127,7 +127,7 @@ ssize_t rtp_fec_construct(rtp_fec *fec, void *data, size_t size)
 
   valid = stream_valid(&s);
   stream_destruct(&s);
-  
+
   return valid ? 0 : -1;
 }
 
@@ -163,7 +163,7 @@ static int rtp_receiver_enqueue_fec(rtp_receiver *r, rtp *f)
 
   if (f->p || f->x || f->m || f->cc || f->pt != 96)
     return -1;
-  
+
   n = rtp_fec_construct(&f->fec, f->data, f->size);
   if (n == -1)
     return -1;
@@ -194,12 +194,13 @@ static int rtp_receiver_enqueue_data(rtp_receiver *r, rtp *f)
       fprintf(stderr, "invalid frame\n");
       return -1;
     }
-  
+
   if (r->data_count >= RTP_MAX_DATA_COUNT)
     {
       fprintf(stderr, "count %lu\n", r->data_count);
       return -1;
     }
+
   list_foreach_reverse(&r->data, i)
     {
       d = rtp_distance(*i, f);
@@ -223,9 +224,8 @@ ssize_t rtp_receiver_write(rtp_receiver *r, void *data, size_t size, int type)
 {
   rtp *f;
   int e;
-  
+
   (void) type;
-  
   f = rtp_new(data, size);
   if (!f)
     return -1;
@@ -270,7 +270,7 @@ static void rtp_receiver_flush(rtp_receiver *r)
       list_erase(i, rtp_receiver_data_release);
       r->data_count --;
     }
-  
+
   while (!list_empty(&r->fec))
     {
       i = list_front(&r->fec);
@@ -287,7 +287,7 @@ ssize_t rtp_receiver_read(rtp_receiver *r, void **data, size_t *size)
 
   if (list_empty(&r->data))
     return 0;
-  
+
   if (!r->data_iterator)
     i = list_front(&r->data);
   else
